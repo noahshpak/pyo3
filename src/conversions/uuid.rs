@@ -31,7 +31,11 @@ static UUID_CLS: GILOnceCell<Py<PyType>> = GILOnceCell::new();
 
 #[inline(always)]
 fn get_uuid_cls(py: Python<'_>) -> PyResult<&Bound<'_, PyType>> {
-    UUID_CLS.get_or_try_init_type_ref(py, "uuid", "UUID")
+    UUID_CLS.get_or_try_init(py, || {
+        py.import("uuid")?
+            .getattr("UUID")?
+            .extract()
+    })
 }
 
 #[inline(always)]
